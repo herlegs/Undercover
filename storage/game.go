@@ -1,67 +1,117 @@
+/***
+Table structures:
+
+Room: roomKey ~ {
+	status: room (GameState)
+	admin: userID
+	majorityNum: int
+	majorityWord: string
+	minorityNum: int
+	minorityWord: string
+	playerCounter: int
+}
+
+UserWordTable: roomKey + "word" ~ {
+	userID: word
+}
+
+UserNameTable: roomKey + "name" ~ {
+	userID: name
+}
+ */
 package storage
 
 import (
 	"time"
-	"sync"
+
+	redigo "github.com/garyburd/redigo/redis"
+
+	"github.com/herlegs/Undercover/redis"
 )
+
+/***
+
+ */
 
 type GameState int
 
 const (
-	Created GameState = iota
+	NotExist GameState = iota
+	//admin created room
+	Created
+	//waiting for admin to start game with config
+	Configuring
+	//waiting for players to join
 	Waiting
+	//started
 	Started
+	//ended
 	Ended
 )
 
 const(
 	RoomTTL = int(time.Hour / time.Second)
-	RoomName = "name"
 	Status = "status"
+	Counter = "playerCounter"
+	UserTableSuffix = "user"
 )
 
-type GameCache struct{
-	sync.RWMutex
-	words []string
-	index int
+func CreateNewPlayer(room, userID, userName string){
+	if !IsRoomExist(room) || IsPlayerExist(room, userID){
+		return
+	}
+	//create player ID from counter
+	player := &Player{}
+	player.ID = GetPlayerCounter(room)
+	player.Name = userName
+	player.Word = ""
+	SetPlayerInfo(room, userID, player)
 }
 
-func (cache *GameCache) generateWords(word1, word2 string, majorityNum, minorityNum int){
-	words := make([]string, majorityNum + minorityNum)
-	for i := 0; i < majorityNum; i++ {
-		words = append(words, word1)
-	}
-	for i := 0; i < minorityNum; i++ {
-		words = append(words, word2)
-	}
-	cache.words = words
-	cache.index = 0
+func GetPlayerCounter(room string) int{
+	roomLocks[room].Lock()
+	counter,_ := redigo.Int(redis.HGet(room, Counter))
+	redis.HSet(room, Counter, counter + 1)
+	roomLocks[room].Unlock()
+	return counter
 }
 
-func (cache *GameCache) getWord() (string, error){
-	cache.Lock()
-	defer cache.Unlock()
-	if cache.index < len(cache.words){
-		word := cache.words[cache.index]
-		cache.index++
-		return word, nil
+func UpdateUserName(room, userID, userName string){
+	player := GetPlayerInfo(room, userID)
+	if player == nil{
+		return
 	}
-	return "", error("Room is full")
+	player.Name = userName
+	SetPlayerInfo(room, userID, player)
 }
 
-//roomName -- wordList
-var roomCache = make(map[string]*GameCache)
+func GetUserName(room, userID string) string{
+	player := GetPlayerInfo(room, userID)
+	if player == nil || player.Name == ""{
+		return userID
+	}
+	return player.Name
+}
 
-func CreateRoom(room string){
-	userTable := room + "user"
-	defer setExpire(room)
-	defer setExpire(userTable)
-	HSet(room, RoomName, room)
-	HSet(room, Status, Created)
+func UpdateUserWord(room, userID, word string){
+	player := GetPlayerInfo(room, userID)
+	if player == nil {
+		return
+	}
+	player.Word = word
+	SetPlayerInfo(room, userID, player)
+}
+
+func GetUserWord(room, userID string) string{
+	player := GetPlayerInfo(room, userID)
+	if player == nil {
+		return ""
+	}
+	return player.Word
 }
 
 func setExpire(key string){
-	ExpireKey(key, RoomTTL)
+	redis.ExpireKey(key, RoomTTL)
 }
 
 

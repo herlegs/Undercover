@@ -2,14 +2,14 @@ package api
 
 import "net/http"
 
-func CreateRoomHandler(http.ResponseWriter, *http.Request){
+func CreateRoomHandler(w http.ResponseWriter, r *http.Request){
 
 }
 
-func StartGameHandler(http.ResponseWriter, *http.Request){
+func StartGameHandler(w http.ResponseWriter, r *http.Request){
 
 }
 
-func EndGameHandler(http.ResponseWriter, *http.Request){
+func EndGameHandler(w http.ResponseWriter, r *http.Request){
 
 }

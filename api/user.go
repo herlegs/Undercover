@@ -1,5 +1,7 @@
 package api
 
-func GameHandler(http.ResponseWriter, *http.Request){
+import "net/http"
+
+func GameHandler(w http.ResponseWriter, r *http.Request){
 
 }

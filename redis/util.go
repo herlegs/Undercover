@@ -1,9 +1,8 @@
-package storage
+package redis
 
 
 import (
 	"github.com/garyburd/redigo/redis"
-	"math/rand"
 )
 
 const(
@@ -15,7 +14,7 @@ var(
 	connection redis.Conn
 )
 
-func RedisInit(){
+func Init(){
 	connection,_ = redis.Dial(redisNetwork, redisAddr)
 }
 
@@ -46,15 +45,16 @@ func ExpireKey(key interface{}, ttl int) error{
 	return err
 }
 
-func RedisClose(){
-	connection.Close()
+func ExistKey(key interface{}) bool{
+	value,err := connection.Do("EXISTS",key)
+	return err == nil && value.(int64) == 1
 }
 
-func shuffle(src []string) []string{
-	dest := make([]string, len(src))
-	perm := rand.Perm(len(src))
-	for i, v := range perm {
-		dest[v] = src[i]
-	}
-	return dest
+func ExistField(key, field interface{}) bool{
+	value,err := connection.Do("HEXISTS",key, field)
+	return err == nil && value.(int64) == 1
+}
+
+func Close(){
+	connection.Close()
 }
