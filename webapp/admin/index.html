@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="../libs/angular/angular-material.min.css">
+<head>
+    <meta charset="UTF-8">
+    <title>Undercover Game Admin</title>
+</head>
+<body data-ng-app="Undercover">
+    <div data-ng-controller="AdminController as admin">
+        <md-content data-ng-show="admin.UserStatus.InRoom">
+            <p>
+                You are currently in room {{admin.UserStatus.RoomID}}
+            </p>
+        </md-content>
+        <md-button class="md-raised md-primary" aria-label="Close" data-ng-if="admin.UserStatus.InRoom"
+                   data-ng-click="">
+            Close Room
+        </md-button>
+    </div>
+
+</body>
+<script src="../libs/angular/angular.min.js"></script>
+<script src="../libs/angular/angular-aria.min.js"></script>
+<script src="../libs/angular/angular-animate.min.js"></script>
+<script src="../libs/angular/angular-material.min.js"></script>
+<script src="../app.js"></script>
+<script src="../util.js"></script>
+<script src="admin.js"></script>
+</html>

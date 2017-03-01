@@ -55,6 +55,11 @@ func ExistField(key, field interface{}) bool{
 	return err == nil && value.(int64) == 1
 }
 
+func Delete(key interface{}) error{
+	_,err := connection.Do("DEL",key)
+	return err
+}
+
 func Close(){
 	connection.Close()
 }

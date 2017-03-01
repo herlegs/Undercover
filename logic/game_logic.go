@@ -3,6 +3,8 @@ package logic
 import (
 	"sync"
 	"errors"
+	"github.com/herlegs/Undercover/storage"
+	"github.com/herlegs/Undercover/api/dto"
 )
 
 type GameCache struct{
@@ -36,3 +38,25 @@ func (cache *GameCache) getWord() (string, error){
 
 //roomName -- wordList
 var roomCache = make(map[string]*GameCache)
+
+func CreateNewRoom(req *dto.CreateRoomRequest) (*dto.CreateRoomResponse, error){
+	roomID := generateRoomName()
+	storage.CreateRoom(roomID, req.AdminID)
+	if storage.IsRoomExist(roomID) {
+		return &dto.CreateRoomResponse{RoomID:roomID}, nil
+	} else{
+		return nil, errors.New("Failed creating room")
+	}
+}
+
+func StartGame(req *dto.StartGameRequest) (*dto.StartGameRequest, error){
+	return nil,nil
+}
+
+func EndGame(req *dto.EndGameRequest) (*dto.EndGameRequest, error){
+	return nil,nil
+}
+
+func CloseRoom(req * dto.CloseRoomRequest) {
+	storage.CloseRoom(req.RoomID)
+}
