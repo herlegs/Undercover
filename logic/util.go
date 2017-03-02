@@ -26,8 +26,9 @@ func generateRoomName() string{
 	}
 }
 
-func shuffle(src []string) []string{
-	dest := make([]string, len(src))
+func shuffle(src []int) []int{
+	dest := make([]int, len(src))
+	rand.Seed(time.Now().UTC().UnixNano())
 	perm := rand.Perm(len(src))
 	for i, v := range perm {
 		dest[v] = src[i]
