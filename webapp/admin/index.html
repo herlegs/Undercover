@@ -1,29 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <link rel="stylesheet" href="../libs/angular/angular-material.min.css">
+<link rel="stylesheet" href="../common.css">
+<link rel="stylesheet" href="admin.css">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=500, initial-scale=1">
     <title>Undercover Game Admin</title>
 </head>
 <body data-ng-app="Undercover">
     <div data-ng-controller="AdminController as admin">
-        <md-content data-ng-show="admin.UserStatus.InRoom">
-            <p>
+        <div data-ng-class="admin.MessageStyle" data-ng-if="admin.ShowMessage">
+            {{admin.Message}}
+        </div>
+        <div layout="row" class="roomInfo" data-ng-show="admin.UserStatus.InRoom">
+            <p flex="50">
                 You are currently in room {{admin.UserStatus.RoomID}}
             </p>
-        </md-content>
-        <md-button class="md-raised md-primary" aria-label="Close" data-ng-if="admin.UserStatus.InRoom"
-                   data-ng-click="">
-            Close Room
+
+            <md-button flex="30" class="md-raised md-warn" aria-label="Close" data-ng-if="admin.UserStatus.InRoom"
+                       data-ng-click="">
+                Close Room
+            </md-button>
+        </div>
+
+        <md-button class="md-raised md-primary" aria-label="Close" data-ng-if="admin.ShowCreateRoom && !admin.UserStatus.InRoom"
+                   data-ng-click="admin.createRoom()">
+            Create Room
         </md-button>
+
+        <div class="gameConfig">
+            <md-input-container class="md-block">
+                <label>Number of Players</label>
+                <input required type="number" step="any" name="total" ng-model="admin.GameConfig.TotalNum" min="{{admin.MinPlayerNum}}"
+                       max="{{admin.MaxPlayerNum}}" />
+
+                <div ng-messages="admin.GameConfig.TotalNum.$error" multiple md-auto-hide="true">
+                    <div ng-message="min">
+                        minimum {{admin.MinPlayerNum}} people
+                    </div>
+
+                    <div ng-message="max">
+                        maximum {{admin.MaxPlayerNum}} people
+                    </div>
+                </div>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+                <label>Number of Minority</label>
+                <input required type="number" step="any" name="minor" ng-model="admin.GameConfig.MinorityNum" min="1"
+                       max="{{admin.TotalNum/2}}" />
+
+                <div ng-messages="admin.GameConfig.TotalNum.$error" multiple md-auto-hide="true">
+                    <div ng-message="min">
+                        minimum 1 people
+                    </div>
+
+                    <div ng-message="max">
+                        maximum {{admin.MaxPlayerNum}} people
+                    </div>
+                </div>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+                <label>Majority Word</label>
+                <input required name="majorWord" ng-model="admin.GameConfig.MajorityWord">
+                <div ng-messages="admin.GameConfig.MajorityWord.$error">
+                    <div ng-message="required">required</div>
+                </div>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+                <label>Minority Word</label>
+                <input required name="minorWord" ng-model="admin.GameConfig.MinorityWord">
+                <div ng-messages="admin.GameConfig.MinorityWord.$error">
+                    <div ng-message="required">required</div>
+                </div>
+            </md-input-container>
+
+            <md-button class="md-raised md-primary" aria-label="Close" data-ng-if="admin.UserStatus.InRoom"
+                       data-ng-click="admin.startGame()">
+                Start Game
+            </md-button>
+        </div>
+
+        <div class="gameMonitor">
+
+            <div class="waitingPlayer">
+                <md-content class="md-padding" layout="column">
+                    <h2 class="md-title">Waiting for players to join (2/10)...</h2>
+
+                    <md-chips>
+                        <md-chip>Hockey</md-chip>
+                        <md-chip>Lacrosse</md-chip>
+                        <md-chip>Baseball</md-chip>
+
+                        <!-- Static chips are transcluded -->
+                        <md-chip>{{}}</md-chip>
+                    </md-chips>
+
+                    <md-progress-linear md-mode="determinate" value="{{admin.Progress}}"></md-progress-linear>
+                </md-content>
+
+            </div>
+
+            <md-button class="md-raised md-warn" aria-label="Close" data-ng-if="admin.UserStatus.InRoom"
+                       data-ng-click="admin.endGame()">
+                End Game
+            </md-button>
+        </div>
+
     </div>
 
 </body>
 <script src="../libs/angular/angular.min.js"></script>
+<!--<script src="../libs/angular/angular-messages.min.js"></script>-->
 <script src="../libs/angular/angular-aria.min.js"></script>
 <script src="../libs/angular/angular-animate.min.js"></script>
 <script src="../libs/angular/angular-material.min.js"></script>
 <script src="../app.js"></script>
 <script src="../util.js"></script>
+<script src="../constant.js"></script>
 <script src="admin.js"></script>
 </html>

@@ -1,5 +1,7 @@
 package dto
 
+import "github.com/herlegs/Undercover/storage"
+
 type GameConfig struct {
 	MajorityNum int
 	MinorityNum int
@@ -47,12 +49,17 @@ func (self *JoinGameRequest) FromValues(values map[string][]string){
 	self.UserName = values["userName"][0]
 }
 
-type ValidateUserRequest struct {
+type UserIdentityRequest struct {
 	UserID string
 	RoomID string
 }
 
-func (self *ValidateUserRequest) FromValues(values map[string][]string){
+func (self *UserIdentityRequest) FromValues(values map[string][]string){
 	self.UserID = values["userID"][0]
 	self.RoomID = values["roomID"][0]
+}
+
+type ValidateUserResponse struct {
+	RoomID string
+	RoomStatus storage.GameState
 }

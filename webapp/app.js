@@ -1,5 +1,6 @@
-(function(){
+var UnderCover = UnderCover ? UnderCover : {util: {}, constant: {}};
 
+(function(){
     var app = angular.module('Undercover', ['ngMaterial']);
 
     app.config(function($mdThemingProvider){

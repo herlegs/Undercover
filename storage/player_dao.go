@@ -15,6 +15,8 @@ type Player struct{
 	Word string
 	IsMinority bool
 	InGame bool
+	Alive bool
+	HasVoted int
 }
 
 func IsPlayerExist(room, userID string) bool{
@@ -72,13 +74,16 @@ func CreateNewPlayer(room, userID, userName string){
 		return
 	}
 	//create player ID from counter
-	player := &Player{}
-	player.UserID = userID
-	player.RoomID = room
-	player.ID = GeneratePlayerCounter(room)
-	player.Name = userName
-	player.Word = ""
-	player.InGame = false
+	player := &Player{
+		UserID : userID,
+		RoomID : room,
+		ID : GeneratePlayerCounter(room),
+		Name : userName,
+		Word : "",
+		InGame : false,
+		Alive : true,
+		HasVoted : -1,
+	}
 	SetPlayerInfo(room, userID, player)
 }
 

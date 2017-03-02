@@ -1,0 +1,17 @@
+.message_info, .message_error{
+    margin: 2px;
+    padding: 10px 10px;
+    font-size: 20px;
+    border-radius: 3px;
+}
+
+.message_info{
+    background-color: rgb(16,108,200);
+    color: white;
+
+}
+
+.message_error{
+    background-color: rgb(255,82,82);
+    color: white;
+}

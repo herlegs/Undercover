@@ -10,7 +10,7 @@ func GetSessionHandler(w http.ResponseWriter, r *http.Request, reqDto dto.Reques
 	request := reqDto.(*dto.GetSessionRequest)
 	user := storage.GetUserFromSession(request.UserID)
 	response := dto.GetSessionResponse{
-		UserID: user.UserID,
+		UserID: request.UserID,
 		SessionFound: false,
 		UserInfo: nil,
 		RoomExist: false,
@@ -18,6 +18,7 @@ func GetSessionHandler(w http.ResponseWriter, r *http.Request, reqDto dto.Reques
 	if user == nil {
 		WriteResponse(w, http.StatusNotFound, response)
 	}else{
+		response.SessionFound = true
 		response.UserInfo = user
 		response.RoomExist = storage.IsRoomExist(user.RoomID)
 		WriteResponse(w, OK, response)
