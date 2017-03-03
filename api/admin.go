@@ -22,17 +22,21 @@ func CreateRoomHandler(w http.ResponseWriter, r *http.Request, reqDto dto.Reques
 }
 
 func StartGameHandler(w http.ResponseWriter, r *http.Request, reqDto dto.Request){
-	//TODO
 	request := reqDto.(*dto.StartGameRequest)
-	request.AdminID = GetUserIDFromRequest(r)
-	WriteResponse(w, OK, request)
+	resp := logic.StartGame(request)
+	if !resp.Authorized {
+		WriteResponse(w, http.StatusForbidden, resp)
+	}
+	WriteResponse(w, OK, resp)
 }
 
 func EndGameHandler(w http.ResponseWriter, r *http.Request, reqDto dto.Request){
-	//TODO
-	request := reqDto.(*dto.EndGameRequest)
-	request.AdminID = GetUserIDFromRequest(r)
-	WriteResponse(w, OK, request)
+	request := reqDto.(*dto.UserIdentityRequest)
+	resp := logic.EndGame(request)
+	if !resp.Authorized {
+		WriteResponse(w, http.StatusForbidden, resp)
+	}
+	WriteResponse(w, OK, resp)
 }
 
 func CloseRoomHandler(w http.ResponseWriter, r *http.Request, reqDto dto.Request){

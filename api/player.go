@@ -6,6 +6,11 @@ import (
 	"github.com/herlegs/Undercover/logic"
 )
 
+func GetRoomInfoHandler(w http.ResponseWriter, r *http.Request, reqDto dto.Request){
+	request := reqDto.(*dto.UserIdentityRequest)
+	resp := logic.GetRoomInfo(request)
+	WriteResponse(w, OK, resp)
+}
 
 func GetRoomPlayerHandler(w http.ResponseWriter, r *http.Request, reqDto dto.Request){
 	request := reqDto.(*dto.UserIdentityRequest)

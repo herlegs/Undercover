@@ -1,12 +1,21 @@
 package dto
 
-import "github.com/herlegs/Undercover/storage"
+import (
+	dao "github.com/herlegs/Undercover/storage"
+)
 
 type GameConfig struct {
-	MajorityNum int
-	MinorityNum int
-	MajorWord string
-	MinorWord string
+	TotalNum int
+	MajorityNum  int
+	MinorityNum  int
+	MajorityWord string
+	MinorityWord string
+}
+
+type RoomInfo struct {
+	RoomStatus dao.GameState
+	GameConfig *GameConfig
+	Players []*dao.Player
 }
 
 type StartGameRequest struct {
@@ -21,22 +30,13 @@ func (self *StartGameRequest) FromValues(values map[string][]string){
 }
 
 type StartGameResponse struct {
-	Success bool
-	ErrorMessage string
-}
-
-type EndGameRequest struct {
-	RoomID string
-	AdminID string
-}
-
-func (self *EndGameRequest) FromValues(values map[string][]string){
-	self.RoomID = values["roomID"][0]
-	self.AdminID = values["userID"][0]
+	Authorized bool
+	RoomStatus dao.GameState
 }
 
 type EndGameResponse struct {
-
+	Authorized bool
+	RoomStatus dao.GameState
 }
 
 type JoinGameRequest struct {
@@ -61,5 +61,5 @@ func (self *UserIdentityRequest) FromValues(values map[string][]string){
 
 type ValidateUserResponse struct {
 	RoomID string
-	RoomStatus storage.GameState
+	RoomStatus dao.GameState
 }

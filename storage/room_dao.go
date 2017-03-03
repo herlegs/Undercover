@@ -58,6 +58,11 @@ func GetAdmin(room string) string{
 	return admin
 }
 
+func IsRoomAdmin(room, userID string) bool{
+	admin := GetAdmin(room)
+	return admin == userID
+}
+
 func IsRoomExist(room string) bool{
 	return redis.ExistKey(room)
 }

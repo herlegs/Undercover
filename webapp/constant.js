@@ -10,14 +10,12 @@ var UnderCover = UnderCover ? UnderCover : {util: {}, constant: {}};
         NotExist : 0,
         //admin created room
         Created : 1,
-        //waiting for admin to start game with config
-        Configuring : 2,
         //waiting for players to join
-        Waiting : 3,
+        Waiting : 2,
         //started
-        Started : 4,
+        Started : 3,
         //ended
-        Ended : 5
+        Ended : 4
     }
 
     constant.MESSAGE_STYLE = {
@@ -25,7 +23,7 @@ var UnderCover = UnderCover ? UnderCover : {util: {}, constant: {}};
         ERROR: "message_error"
     }
 
-    constant.MIN_PLAYER_NUM = 3;
+    constant.MIN_PLAYER_NUM = 1;
     constant.MAX_PLAYER_NUM = 30;
 
 })();

@@ -15,7 +15,7 @@ func DoRouting(r *mux.Router){
 	r.HandleFunc("/admin/create",
 		GenerateRequestHandler(
 			CreateRoomHandler,
-			&dto.CreateRoomRequest{})).Methods("get")
+			&dto.CreateRoomRequest{})).Methods("post")
 	r.HandleFunc("/admin/{roomID}/startgame",
 		GenerateRequestHandler(
 			StartGameHandler,
@@ -23,7 +23,7 @@ func DoRouting(r *mux.Router){
 	r.HandleFunc("/admin/{roomID}/endgame",
 		GenerateRequestHandler(
 			EndGameHandler,
-			&dto.EndGameRequest{})).Methods("post")
+			&dto.UserIdentityRequest{})).Methods("post")
 	r.HandleFunc("/admin/{roomID}/close",
 		GenerateRequestHandler(
 			CloseRoomHandler,
@@ -37,11 +37,15 @@ func DoRouting(r *mux.Router){
 		GenerateRequestHandler(
 			ValidatePlayerHandler,
 			&dto.UserIdentityRequest{})).Methods("get")
-	r.HandleFunc("player/{userID}/{roomID}", GameHandler).Methods("get")
 
-	r.HandleFunc("/game/{roomID}/getplayers",
+	r.HandleFunc("player/{roomID}/{userName}/join",
 		GenerateRequestHandler(
-			GetRoomPlayerHandler,
+			ValidatePlayerHandler,
+			&dto.UserIdentityRequest{})).Methods("get")
+
+	r.HandleFunc("/game/{roomID}/roominfo",
+		GenerateRequestHandler(
+			GetRoomInfoHandler,
 			&dto.UserIdentityRequest{})).Methods("get")
 
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./webapp")))

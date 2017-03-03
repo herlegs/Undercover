@@ -1,24 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-<link rel="stylesheet" href="../libs/angular/angular-material.min.css">
-<link rel="stylesheet" href="../common.css">
-<link rel="stylesheet" href="admin.css">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=500, initial-scale=1">
+    <link rel="stylesheet" href="../libs/angular/angular-material.min.css">
+    <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="admin.css">
     <title>Undercover Game Admin</title>
 </head>
 <body data-ng-app="Undercover">
     <div data-ng-controller="AdminController as admin">
-        <div data-ng-class="admin.MessageStyle" data-ng-if="admin.ShowMessage">
-            {{admin.Message}}
-        </div>
+        <div data-ng-class="admin.MessageStyle" data-ng-if="admin.ShowMessage">{{admin.Message}}</div>
         <div layout="row" class="roomInfo" data-ng-show="admin.UserStatus.InRoom">
-            <p flex="50">
+            <p>
                 You are currently in room {{admin.UserStatus.RoomID}}
             </p>
 
-            <md-button flex="30" class="md-raised md-warn" aria-label="Close" data-ng-if="admin.UserStatus.InRoom"
+            <md-button class="md-raised md-warn" aria-label="Close" data-ng-if="admin.UserStatus.InRoom"
                        data-ng-click="">
                 Close Room
             </md-button>
@@ -29,7 +27,8 @@
             Create Room
         </md-button>
 
-        <div class="gameConfig">
+        <div class="startGameConfig" data-ng-if="admin.UserStatus.InRoom
+        && (admin.UserStatus.RoomStatus == admin.ROOM_STATUS.Created || admin.UserStatus.RoomStatus == admin.ROOM_STATUS.Ended)">
             <md-input-container class="md-block">
                 <label>Number of Players</label>
                 <input required type="number" step="any" name="total" ng-model="admin.GameConfig.TotalNum" min="{{admin.MinPlayerNum}}"
@@ -48,12 +47,12 @@
 
             <md-input-container class="md-block">
                 <label>Number of Minority</label>
-                <input required type="number" step="any" name="minor" ng-model="admin.GameConfig.MinorityNum" min="1"
+                <input required type="number" step="any" name="minor" ng-model="admin.GameConfig.MinorityNum" min="{{admin.MinMinority}}"
                        max="{{admin.TotalNum/2}}" />
 
-                <div ng-messages="admin.GameConfig.TotalNum.$error" multiple md-auto-hide="true">
+                <div ng-messages="admin.GameConfig.MinorityNum.$error" multiple md-auto-hide="true">
                     <div ng-message="min">
-                        minimum 1 people
+                        minimum {{admin.MinMinority}} people
                     </div>
 
                     <div ng-message="max">
@@ -86,17 +85,14 @@
 
         <div class="gameMonitor">
 
-            <div class="waitingPlayer">
+            <div class="waitingPlayer" data-ng-if="admin.UserStatus.RoomStatus == admin.ROOM_STATUS.Waiting">
                 <md-content class="md-padding" layout="column">
-                    <h2 class="md-title">Waiting for players to join (2/10)...</h2>
+                    <h2 class="md-title">Waiting for players to join ({{admin.Players.length}}/{{admin.GameConfig.TotalNum}})...</h2>
 
-                    <md-chips>
-                        <md-chip>Hockey</md-chip>
-                        <md-chip>Lacrosse</md-chip>
-                        <md-chip>Baseball</md-chip>
-
-                        <!-- Static chips are transcluded -->
-                        <md-chip>{{}}</md-chip>
+                    <md-chips ng-model="admin.Players" readonly="true">
+                        <md-chip-template>
+                            {{$chip.Name}}
+                        </md-chip-template>
                     </md-chips>
 
                     <md-progress-linear md-mode="determinate" value="{{admin.Progress}}"></md-progress-linear>
@@ -104,7 +100,31 @@
 
             </div>
 
-            <md-button class="md-raised md-warn" aria-label="Close" data-ng-if="admin.UserStatus.InRoom"
+            <div class="gameBoard"
+                 data-ng-if="admin.UserStatus.RoomStatus == admin.ROOM_STATUS.Waiting">
+                <table>
+                    <thead>
+                        <tr>
+                            <td>Id</td>
+                            <td>Name</td>
+                            <td>Word</td>
+                            <td>Minority</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="player in admin.Players" class="{{player.IsMinority ? 'minority' : ''}}">
+                            <td>{{player.ID}}</td>
+                            <td>{{player.Name}}</td>
+                            <td>{{player.Word}}</td>
+                            <td>{{player.IsMinority ? "Yes" : ""}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <md-button class="md-raised md-warn" aria-label="Close"
+                       data-ng-if="admin.UserStatus.InRoom
+                       && (admin.UserStatus.RoomStatus == admin.ROOM_STATUS.Waiting || admin.UserStatus.RoomStatus == admin.ROOM_STATUS.Started)"
                        data-ng-click="admin.endGame()">
                 End Game
             </md-button>

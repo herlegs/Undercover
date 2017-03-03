@@ -13,4 +13,16 @@ var UnderCover = UnderCover ? UnderCover : {util: {}, constant: {}};
         }
     };
 
+    util.sortByField = function(array, fieldName){
+        array.sort(function(a, b){
+            if(a[fieldName] > b[fieldName]){
+                return 1;
+            }
+            if(a[fieldName] < b[fieldName]){
+                return -1;
+            }
+            return 0;
+        })
+    }
+
 })();

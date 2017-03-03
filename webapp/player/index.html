@@ -2,9 +2,52 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=500, initial-scale=1">
+    <link rel="stylesheet" href="../libs/angular/angular-material.min.css">
+    <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="player.css">
+    <title>Undercover Game Player</title>
 </head>
-<body>
+<body data-ng-app="Undercover">
+    <div data-ng-controller="ClientController as client">
+        <div data-ng-class="client.MessageStyle" data-ng-if="client.ShowMessage">{{client.Message}}</div>
+        <div layout="row" class="roomInfo" data-ng-if="client.UserStatus.InRoom">
+            <p>
+                You are currently in room {{client.UserStatus.RoomID}}
+            </p>
 
+            <md-button class="md-raised md-warn" aria-label="Close" data-ng-if="client.UserStatus.InRoom"
+                       data-ng-click="">
+                Leave Room
+            </md-button>
+        </div>
+
+        <div class="joinRoomConfig" data-ng-if="!client.UserStatus.InRoom">
+            <md-input-container class="md-block">
+                <label>Room ID</label>
+                <input required type="number" step="any" name="roomID" ng-model="client.JoinRoomConfig.RoomID"
+                ng-pattern="/^[0-9]{4}$/" required>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+                <label>User Name</label>
+                <input required name="userName" ng-model="client.JoinRoomConfig.UserName"
+                       ng-pattern="/^[a-zA-Z0-9\-_\.]+$/" required>
+            </md-input-container>
+
+            <md-button class="md-raised md-primary" aria-label="Join" data-ng-click="client.joinRoom()">
+                Join Room
+            </md-button>
+        </div>
+    </div>
 </body>
+<script src="../libs/angular/angular.min.js"></script>
+<!--<script src="../libs/angular/angular-messages.min.js"></script>-->
+<script src="../libs/angular/angular-aria.min.js"></script>
+<script src="../libs/angular/angular-animate.min.js"></script>
+<script src="../libs/angular/angular-material.min.js"></script>
+<script src="../app.js"></script>
+<script src="../util.js"></script>
+<script src="../constant.js"></script>
+<script src="player.js"></script>
 </html>

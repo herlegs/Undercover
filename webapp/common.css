@@ -3,6 +3,7 @@
     padding: 10px 10px;
     font-size: 20px;
     border-radius: 3px;
+    white-space: pre;
 }
 
 .message_info{
@@ -14,4 +15,31 @@
 .message_error{
     background-color: rgb(255,82,82);
     color: white;
+}
+
+
+.gameBoard{
+    padding: 0px 10px;
+}
+
+.gameBoard table{
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.gameBoard table thead{
+    background-color: #eee;
+}
+
+.gameBoard table tr:nth-child(even){
+    background: #eee;
+}
+
+.gameBoard table, .gameBoard td{
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.minority {
+    color: rgb(244,67,54);
 }

@@ -34,8 +34,6 @@ const (
 	NotExist GameState = iota
 	//admin created room
 	Created
-	//waiting for admin to start game with config
-	Configuring
 	//waiting for players to join
 	Waiting
 	//started
