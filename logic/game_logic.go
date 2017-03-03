@@ -22,7 +22,7 @@ type GameCache struct{
 	minorityWord string
 }
 
-func (cache *GameCache) generateWords(majorWord, minorWord string, majorityNum, minorityNum int){
+func (cache *GameCache) generateWords(majorityWord, minorityWord string, majorityNum, minorityNum int){
 	ids := make([]int, majorityNum + minorityNum)
 	for i := 0; i < majorityNum; i++ {
 		ids = append(ids, MAJORITY)
@@ -32,6 +32,10 @@ func (cache *GameCache) generateWords(majorWord, minorWord string, majorityNum, 
 	}
 	cache.identities = shuffle(ids)
 	cache.index = 0
+	cache.majorityNum = majorityNum
+	cache.minorityNum = minorityNum
+	cache.majorityWord = majorityWord
+	cache.minorityWord = minorityWord
 }
 
 func (cache *GameCache) getWord() (string, error){
@@ -80,8 +84,16 @@ func StartGame(req *dto.StartGameRequest) (*dto.StartGameResponse){
 	return resp
 }
 
-func EndGame(req *dto.EndGameRequest) (*dto.EndGameRequest, error){
-	return nil,nil
+func EndGame(req *dto.UserIdentityRequest) (*dto.EndGameResponse){
+	resp := &dto.EndGameResponse{}
+	if !dao.IsRoomAdmin(req.RoomID, req.UserID) {
+		resp.Authorized = false
+		return resp
+	}
+	resp.Authorized = true
+	dao.SetRoomStatus(req.RoomID, dao.Ended)
+	resp.RoomStatus = dao.Ended
+	return resp
 }
 
 func CloseRoom(req * dto.CloseRoomRequest) {
@@ -156,4 +168,8 @@ func hideGameConfig(gameConfig *dto.GameConfig) *dto.GameConfig{
 	return &dto.GameConfig{
 		TotalNum: gameConfig.TotalNum,
 	}
+}
+
+func JoinRoom(){
+
 }
