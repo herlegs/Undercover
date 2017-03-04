@@ -1,20 +1,5 @@
 /***
 Table structures:
-
-Room: roomKey ~ {
-	status: room (GameState)
-	admin: userID
-	majorityNum: int
-	majorityWord: string
-	minorityNum: int
-	minorityWord: string
-	playerCounter: int
-}
-
-UserTable: roomKey + "user" ~ Player{
-
-}
-
  */
 package storage
 

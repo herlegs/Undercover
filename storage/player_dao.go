@@ -69,9 +69,9 @@ func GetAllPlayer(room string) []*Player{
 }
 
 
-func CreateNewPlayer(room, userID, userName string){
+func CreateNewPlayer(room, userID, userName string) *Player{
 	if !IsRoomExist(room) || IsPlayerExist(room, userID){
-		return
+		return nil
 	}
 	//create player ID from counter
 	player := &Player{
@@ -85,6 +85,7 @@ func CreateNewPlayer(room, userID, userName string){
 		HasVoted : -1,
 	}
 	SetPlayerInfo(room, userID, player)
+	return player
 }
 
 func UpdateUserName(room, userID, userName string){
@@ -130,4 +131,18 @@ func GetAllInGamePlayer(room string) []*Player{
 		}
 	}
 	return filtered
+}
+
+func ResetAllPlayerInGameStatus(room string){
+	allPlayers := GetAllPlayer(room)
+	for _, player := range allPlayers{
+		player.InGame = false;
+		SetPlayerInfo(room, player.UserID, player)
+	}
+}
+
+func SetPlayerInGameStatus(room, userID string){
+	player := GetPlayerInfo(room, userID)
+	player.InGame = false;
+	SetPlayerInfo(room, player.UserID, player)
 }

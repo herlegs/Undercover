@@ -1,3 +1,7 @@
+.roomInfo {
+    padding: 0px 10px;
+}
+
 .message_info, .message_error{
     margin: 2px;
     padding: 10px 10px;
@@ -16,7 +20,6 @@
     background-color: rgb(255,82,82);
     color: white;
 }
-
 
 .gameBoard{
     padding: 0px 10px;

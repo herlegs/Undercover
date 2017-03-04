@@ -42,10 +42,16 @@ func getPlayerCounter(room string) int{
 }
 
 func GeneratePlayerCounter(room string) int{
-	roomLocks[room].Lock()
+	lock,ok := roomLocks[room]
+	if !ok {
+		//server has restarted
+		roomLocks[room] = &sync.Mutex{}
+		lock = roomLocks[room]
+	}
+	lock.Lock()
 	counter := getPlayerCounter(room)
 	setPlayerCounter(room, counter + 1)
-	roomLocks[room].Unlock()
+	lock.Unlock()
 	return counter
 }
 

@@ -38,10 +38,10 @@ func DoRouting(r *mux.Router){
 			ValidatePlayerHandler,
 			&dto.UserIdentityRequest{})).Methods("get")
 
-	r.HandleFunc("player/{roomID}/{userName}/join",
+	r.HandleFunc("/player/{roomID}/{userName}/join",
 		GenerateRequestHandler(
-			ValidatePlayerHandler,
-			&dto.UserIdentityRequest{})).Methods("get")
+			JoinRoomHandler,
+			&dto.JoinGameRequest{})).Methods("post")
 
 	r.HandleFunc("/game/{roomID}/roominfo",
 		GenerateRequestHandler(

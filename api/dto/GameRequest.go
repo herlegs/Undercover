@@ -39,16 +39,6 @@ type EndGameResponse struct {
 	RoomStatus dao.GameState
 }
 
-type JoinGameRequest struct {
-	UserID string
-	UserName string
-}
-
-func (self *JoinGameRequest) FromValues(values map[string][]string){
-	self.UserID = values["userID"][0]
-	self.UserName = values["userName"][0]
-}
-
 type UserIdentityRequest struct {
 	UserID string
 	RoomID string
@@ -63,3 +53,21 @@ type ValidateUserResponse struct {
 	RoomID string
 	RoomStatus dao.GameState
 }
+
+type JoinGameRequest struct {
+	RoomID string
+	UserID string
+	UserName string
+}
+
+func (self *JoinGameRequest) FromValues(values map[string][]string){
+	self.UserID = values["userID"][0]
+	self.RoomID = values["roomID"][0]
+	self.UserName = values["userName"][0]
+}
+
+type JoinGameResponse struct {
+	RoomStatus dao.GameState
+	UserInfo *dao.Player
+}
+

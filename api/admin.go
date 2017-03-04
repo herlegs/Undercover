@@ -68,6 +68,8 @@ func ValidatePlayerHandler(w http.ResponseWriter, r *http.Request, reqDto dto.Re
 	}
 	if isAdmin {
 		WriteResponse(w, http.StatusForbidden, "")
+	}else if resp.RoomStatus == dao.NotExist{
+		WriteResponse(w, http.StatusNotFound, "")
 	}else{
 		WriteResponse(w, OK, resp)
 	}

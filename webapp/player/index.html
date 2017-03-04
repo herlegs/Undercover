@@ -13,7 +13,7 @@
         <div data-ng-class="client.MessageStyle" data-ng-if="client.ShowMessage">{{client.Message}}</div>
         <div layout="row" class="roomInfo" data-ng-if="client.UserStatus.InRoom">
             <p>
-                You are currently in room {{client.UserStatus.RoomID}}
+                You are currently in room {{client.UserInfo.RoomID}}
             </p>
 
             <md-button class="md-raised md-warn" aria-label="Close" data-ng-if="client.UserStatus.InRoom"
@@ -25,19 +25,63 @@
         <div class="joinRoomConfig" data-ng-if="!client.UserStatus.InRoom">
             <md-input-container class="md-block">
                 <label>Room ID</label>
-                <input required type="number" step="any" name="roomID" ng-model="client.JoinRoomConfig.RoomID"
+                <input required name="roomID" ng-model="client.UserInfo.RoomID"
                 ng-pattern="/^[0-9]{4}$/" required>
             </md-input-container>
 
             <md-input-container class="md-block">
                 <label>User Name</label>
-                <input required name="userName" ng-model="client.JoinRoomConfig.UserName"
+                <input required name="userName" ng-model="client.UserInfo.Name"
                        ng-pattern="/^[a-zA-Z0-9\-_\.]+$/" required>
             </md-input-container>
 
-            <md-button class="md-raised md-primary" aria-label="Join" data-ng-click="client.joinRoom()">
+            <md-button class="md-raised md-primary" aria-label="Join" data-ng-click="client.validatePlayer()">
                 Join Room
             </md-button>
+        </div>
+
+        <div class="gameMonitor">
+            <div class="waitingAdmin" class="md-padding" data-ng-if="client.UserStatus.RoomStatus == client.ROOM_STATUS.Created">
+                <p>Waiting for admin setting up game... </p>
+            </div>
+
+            <div class="waitingPlayer" class="md-padding"
+                 data-ng-if="client.UserStatus.RoomStatus == client.ROOM_STATUS.Waiting">
+                <md-content layout="column">
+                    <h2 class="md-title">Waiting for players to join ({{client.Players.length}}/{{client.GameConfig.TotalNum}})...</h2>
+
+                    <md-chips ng-model="client.Players" readonly="true">
+                        <md-chip-template>
+                            {{$chip.Name}}
+                        </md-chip-template>
+                    </md-chips>
+
+                    <md-progress-linear md-mode="determinate" value="{{client.Progress}}"></md-progress-linear>
+                </md-content>
+
+            </div>
+
+            <div class="gameBoard md-padding"
+                data-ng-if="client.UserStatus.RoomStatus == client.ROOM_STATUS.Waiting || client.UserStatus.RoomStatus == client.ROOM_STATUS.Started || client.UserStatus.RoomStatus == client.ROOM_STATUS.Ended">
+                <table>
+                    <thead>
+                    <tr>
+                        <td>Id</td>
+                        <td>Name</td>
+                        <td>Word</td>
+                        <td>Minority</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="player in client.Players" class="{{(client.UserStatus.RoomStatus == client.ROOM_STATUS.Ended && player.IsMinority) ? 'minority' : ''}}">
+                        <td>{{player.ID}}</td>
+                        <td>{{player.Name}}</td>
+                        <td>{{player.Word != "" ? player.Word : "???"}}</td>
+                        <td>{{(client.UserStatus.RoomStatus == client.ROOM_STATUS.Ended && player.IsMinority) ? "Yes" : ""}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </body>

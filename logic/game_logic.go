@@ -5,6 +5,7 @@ import (
 	"errors"
 	dao "github.com/herlegs/Undercover/storage"
 	"github.com/herlegs/Undercover/api/dto"
+	"fmt"
 )
 
 const(
@@ -13,7 +14,7 @@ const(
 )
 
 type GameCache struct{
-	sync.RWMutex
+	sync.Mutex
 	identities []int
 	index int
 	majorityNum int
@@ -79,6 +80,7 @@ func StartGame(req *dto.StartGameRequest) (*dto.StartGameResponse){
 	gameCache := &GameCache{}
 	gameCache.generateWords(req.MajorityWord, req.MinorityWord, req.MajorityNum, req.MinorityNum)
 	gameCacheMap[req.RoomID] = gameCache
+	resetPlayerInGameStatus(req.RoomID)
 	dao.SetRoomStatus(req.RoomID, dao.Waiting)
 	resp.RoomStatus = dao.Waiting
 	return resp
@@ -108,6 +110,7 @@ func GetRoomPlayers(req * dto.UserIdentityRequest) []*dao.Player {
 	isAdmin := IsRoomAdmin(req)
 	roomStatus := dao.GetRoomStatus(req.RoomID)
 	players := dao.GetAllInGamePlayer(req.RoomID)
+	fmt.Println("players num:",len(players))
 	if isAdmin || roomStatus == dao.Ended{
 		return players
 	}else{
@@ -119,12 +122,14 @@ func GetGameConfig(req * dto.UserIdentityRequest) *dto.GameConfig{
 	roomStatus := dao.GetRoomStatus(req.RoomID)
 	isAdmin := IsRoomAdmin(req)
 	gameCache := gameCacheMap[req.RoomID]
-	gameConfig := &dto.GameConfig{
-		MajorityNum: gameCache.majorityNum,
-		MinorityNum: gameCache.minorityNum,
-		MajorityWord: gameCache.majorityWord,
-		MinorityWord: gameCache.minorityWord,
-		TotalNum: gameCache.majorityNum + gameCache.minorityNum,
+	gameConfig := &dto.GameConfig{}
+	if gameCache != nil {
+		gameConfig.MajorityNum = gameCache.majorityNum
+		gameConfig.MinorityNum = gameCache.minorityNum
+		gameConfig.MajorityWord = gameCache.majorityWord
+		gameConfig.MinorityWord = gameCache.minorityWord
+		gameConfig.TotalNum = gameCache.majorityNum + gameCache.minorityNum
+
 	}
 	if isAdmin || roomStatus == dao.Ended{
 		return gameConfig
@@ -170,6 +175,40 @@ func hideGameConfig(gameConfig *dto.GameConfig) *dto.GameConfig{
 	}
 }
 
-func JoinRoom(){
+func JoinRoom(req *dto.JoinGameRequest) (*dto.RoomInfo, error){
+	roomID := req.RoomID
+	userID := req.UserID
+	userName := req.UserName
+	player := dao.GetPlayerInfo(roomID, req.UserID)
+	if player == nil{
+		player = dao.CreateNewPlayer(roomID, userID, userName)
+	}
+	gameCache := gameCacheMap[roomID]
+	roomStatus := dao.GetRoomStatus(roomID)
+	if gameCache != nil && roomStatus == dao.Waiting{
+		var err error
+		player.Word, err = gameCache.getWord()
+		if err != nil {
+			return nil, err
+		}
+		if player.Word == gameCache.minorityWord {
+			player.IsMinority = true
+		}
+		player.InGame = true
+		player.Alive = true
+		player.HasVoted = -1
+		if gameCache.index >= len(gameCache.identities){
+			dao.SetRoomStatus(roomID, dao.Started)
+		}
+	}
+	dao.SetPlayerInfo(roomID, userID, player)
+	roomInfo := GetRoomInfo(&dto.UserIdentityRequest{
+		UserID: userID,
+		RoomID: roomID,
+	})
+	return roomInfo, nil
+}
 
+func resetPlayerInGameStatus(room string){
+	dao.ResetAllPlayerInGameStatus(room)
 }

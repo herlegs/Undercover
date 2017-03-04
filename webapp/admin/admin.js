@@ -16,7 +16,7 @@
         util.storeParam(vm, dependency, arguments);
 
         //checking players joining
-        vm.WaitingInterval = 3000;
+        vm.WaitingPlayerInterval = 3000;
         vm.ROOM_STATUS = constant.ROOM_STATUS;
 
         vm.UserStatus = {
@@ -68,11 +68,10 @@
     };
 
     AdminController.prototype.restoreSession = function(data){
-        console.log(data);
         var vm = this;
         if(data.RoomExist){
             vm.showToast("you have rejoined");
-            vm.joinRoom.call(vm, data)
+            vm.joinRoom.call(vm, data.UserInfo)
         }
         else{
             vm.createRoom.call(vm)
@@ -81,18 +80,18 @@
 
     AdminController.prototype.joinRoom = function(data){
         var vm = this;
-        var roomID =  data.UserInfo.RoomID;
+        var roomID =  data.RoomID;
         vm.param.$http({
             method: "GET",
             url: "/admin/" + roomID + "/validate"
         }).then(function success(response){
             vm.UserStatus = {
                 InRoom: true,
-                RoomID: data.UserInfo.RoomID,
+                RoomID: roomID,
                 RoomStatus: response.data.RoomStatus
             };
             if(vm.UserStatus.RoomStatus == constant.ROOM_STATUS.Waiting){
-                vm.waitForPlayers.call(vm);
+                vm.waitingForPlayers.call(vm);
             }
         }, function fail(response){
             vm.showMessage("You are not authorized to be admin of room " + roomID);
@@ -159,13 +158,13 @@
         }).then(function(response){
             console.log(response.data)
             vm.UserStatus.RoomStatus = response.data.RoomStatus;
-            vm.waitForPlayers.call(vm);
+            vm.waitingForPlayers.call(vm);
         }, function fail(response){
             vm.showMessage("You are not authorized to start game")
         });
     };
 
-    AdminController.prototype.waitForPlayers = function(){
+    AdminController.prototype.waitingForPlayers = function(){
         console.log("wait for players")
         var vm = this;
         if(vm.UserStatus.RoomStatus != constant.ROOM_STATUS.Waiting){
@@ -181,9 +180,9 @@
             vm.UserStatus.RoomStatus = roomStatus;
             vm.GameConfig = roomInfo.GameConfig;
             vm.Players = roomInfo.Players;
-            vm.Progress = 100 * vm.Players.length / vm.GameConfig.TotalNum;
+            vm.Progress = vm.GameConfig.TotalNum == 0 ? 0 : 100 * vm.Players.length / vm.GameConfig.TotalNum;
             if(roomStatus == constant.ROOM_STATUS.Waiting){
-                vm.param.$timeout(vm.waitForPlayers.bind(vm), vm.WaitingInterval)
+                vm.param.$timeout(vm.waitingForPlayers.bind(vm), vm.WaitingPlayerInterval)
             }
             else if(roomStatus == constant.ROOM_STATUS.Started){
                 //monitor game only
