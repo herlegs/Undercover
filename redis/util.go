@@ -46,13 +46,13 @@ func ExpireKey(key interface{}, ttl int) error{
 }
 
 func ExistKey(key interface{}) bool{
-	value,err := connection.Do("EXISTS",key)
-	return err == nil && value.(int64) == 1
+	exists,err := redis.Bool(connection.Do("EXISTS",key))
+	return err == nil && exists
 }
 
 func ExistField(key, field interface{}) bool{
-	value,err := connection.Do("HEXISTS",key, field)
-	return err == nil && value.(int64) == 1
+	exists,err := redis.Bool(connection.Do("HEXISTS",key, field))
+	return err == nil && exists
 }
 
 func Delete(key interface{}) error{

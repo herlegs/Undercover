@@ -5,7 +5,6 @@ import (
 	"errors"
 	dao "github.com/herlegs/Undercover/storage"
 	"github.com/herlegs/Undercover/api/dto"
-	"fmt"
 )
 
 const(
@@ -24,7 +23,7 @@ type GameCache struct{
 }
 
 func (cache *GameCache) generateWords(majorityWord, minorityWord string, majorityNum, minorityNum int){
-	ids := make([]int, majorityNum + minorityNum)
+	ids := make([]int, 0)
 	for i := 0; i < majorityNum; i++ {
 		ids = append(ids, MAJORITY)
 	}
@@ -49,7 +48,7 @@ func (cache *GameCache) getWord() (string, error){
 		if identity == MAJORITY {
 			word = cache.majorityWord
 		}else{
-			word = cache.majorityWord
+			word = cache.minorityWord
 		}
 		return word, nil
 	}
@@ -110,7 +109,6 @@ func GetRoomPlayers(req * dto.UserIdentityRequest) []*dao.Player {
 	isAdmin := IsRoomAdmin(req)
 	roomStatus := dao.GetRoomStatus(req.RoomID)
 	players := dao.GetAllInGamePlayer(req.RoomID)
-	fmt.Println("players num:",len(players))
 	if isAdmin || roomStatus == dao.Ended{
 		return players
 	}else{
@@ -152,7 +150,7 @@ func GetRoomInfo(req * dto.UserIdentityRequest) *dto.RoomInfo {
 
 //hide other players information from current player
 func hidePlayerInfo(players []*dao.Player, userID string) []*dao.Player{
-	maskedPlayers := make([]*dao.Player, len(players))
+	maskedPlayers := make([]*dao.Player, 0)
 	for _, player := range players {
 		maskedPlayer := &dao.Player{
 			ID: player.ID,
