@@ -155,6 +155,7 @@
     };
 
     ClientController.prototype.calculateProgress = function(){
+        var vm = this;
         vm.Progress = vm.GameConfig.TotalNum == 0 ? 0 : 100 * vm.Players.length / vm.GameConfig.TotalNum;
     };
 
