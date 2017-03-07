@@ -32,7 +32,7 @@
 
         vm.MinPlayerNum = constant.MIN_PLAYER_NUM;
         vm.MaxPlayerNum = constant.MAX_PLAYER_NUM;
-        vm.MinMinority = 0;
+        vm.MinMinority = constant.MIN_MINORITY_NUM;
 
         vm.GameConfig = {
             TotalNum: vm.MinPlayerNum,

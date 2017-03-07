@@ -23,7 +23,8 @@ var UnderCover = UnderCover ? UnderCover : {util: {}, constant: {}};
         ERROR: "message_error"
     }
 
-    constant.MIN_PLAYER_NUM = 1;
+    constant.MIN_PLAYER_NUM = 3;
     constant.MAX_PLAYER_NUM = 30;
+    constant.MIN_MINORITY_NUM = 1;
 
 })();
