@@ -179,7 +179,8 @@
             var roomStatus = roomInfo.RoomStatus;
             vm.UserStatus.RoomStatus = roomStatus;
             vm.GameConfig = roomInfo.GameConfig;
-            vm.Players = util.sortByField(roomInfo.Players, "IsMinority");
+            vm.Players = roomInfo.Players;
+            util.sortByField(vm.Players, "IsMinority");
             vm.calculateProgress();
             if(roomStatus == constant.ROOM_STATUS.Waiting){
                 vm.param.$timeout(vm.waitingForPlayers.bind(vm), vm.WaitingPlayerInterval)

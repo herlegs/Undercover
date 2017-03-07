@@ -66,7 +66,7 @@
         var vm = this;
         vm.showToast("you are rejoining room");
         vm.UserInfo = data.UserInfo;
-        vm.joinRoom.call(vm)
+        vm.validatePlayer.call(vm)
     };
 
     ClientController.prototype.validatePlayer = function(){
@@ -147,7 +147,8 @@
             if(!(vm.UserStatus.RoomStatus == constant.ROOM_STATUS.Started && roomInfo.RoomStatus == constant.ROOM_STATUS.Started)){
                 vm.UserStatus.RoomStatus = roomInfo.RoomStatus;
                 vm.GameConfig = roomInfo.GameConfig;
-                vm.Players = util.sortByField(roomInfo.Players, "ID");
+                vm.Players = roomInfo.Players;
+                util.sortByField(vm.Players, "ID");
                 vm.calculateProgress();
             }
             vm.checkingGameStatus.call(vm)
