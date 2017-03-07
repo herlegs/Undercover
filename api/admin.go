@@ -17,6 +17,7 @@ func CreateRoomHandler(w http.ResponseWriter, r *http.Request, reqDto dto.Reques
 	resp,err := logic.CreateNewRoom(request)
 	if err != nil {
 		WriteResponse(w, ServerError, err.Error())
+		return
 	}
 	WriteResponse(w, OK, resp)
 }
@@ -26,6 +27,7 @@ func StartGameHandler(w http.ResponseWriter, r *http.Request, reqDto dto.Request
 	resp := logic.StartGame(request)
 	if !resp.Authorized {
 		WriteResponse(w, http.StatusForbidden, resp)
+		return
 	}
 	WriteResponse(w, OK, resp)
 }
@@ -35,6 +37,7 @@ func EndGameHandler(w http.ResponseWriter, r *http.Request, reqDto dto.Request){
 	resp := logic.EndGame(request)
 	if !resp.Authorized {
 		WriteResponse(w, http.StatusForbidden, resp)
+		return
 	}
 	WriteResponse(w, OK, resp)
 }

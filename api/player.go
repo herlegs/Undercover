@@ -17,6 +17,7 @@ func JoinRoomHandler(w http.ResponseWriter, r *http.Request, reqDto dto.Request)
 	resp,err := logic.JoinRoom(request)
 	if err != nil {
 		WriteResponse(w, http.StatusForbidden, err.Error())
+		return
 	}
 	WriteResponse(w, OK, resp)
 }

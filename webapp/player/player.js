@@ -107,8 +107,8 @@
             vm.UserStatus.InRoom = true;
             vm.UserStatus.RoomStatus = data.RoomStatus;
             vm.GameConfig = data.GameConfig;
-            vm.Players = data.Players;
-            vm.Progress = vm.GameConfig.TotalNum == 0 ? 0 : 100 * vm.Players.length / vm.GameConfig.TotalNum;
+            vm.Players = util.sortByField(data.Players, "ID");
+            vm.calculateProgress();
             vm.checkingGameStatus.call(vm)
         }, function fail(response){
             console.log(response)
@@ -143,12 +143,19 @@
             var roomInfo = response.data;
             console.log("get roominfo response")
             console.log(roomInfo)
-            vm.UserStatus.RoomStatus = roomInfo.RoomStatus;
-            vm.GameConfig = roomInfo.GameConfig;
-            vm.Players = roomInfo.Players;
-            vm.Progress = vm.GameConfig.TotalNum == 0 ? 0 : 100 * vm.Players.length / vm.GameConfig.TotalNum;
+            //if game already started, no need to update players and gameconfig
+            if(!(vm.UserStatus.RoomStatus == constant.ROOM_STATUS.Started && roomInfo.RoomStatus == constant.ROOM_STATUS.Started)){
+                vm.UserStatus.RoomStatus = roomInfo.RoomStatus;
+                vm.GameConfig = roomInfo.GameConfig;
+                vm.Players = util.sortByField(roomInfo.Players, "ID");
+                vm.calculateProgress();
+            }
             vm.checkingGameStatus.call(vm)
         });
+    };
+
+    ClientController.prototype.calculateProgress = function(){
+        vm.Progress = vm.GameConfig.TotalNum == 0 ? 0 : 100 * vm.Players.length / vm.GameConfig.TotalNum;
     };
 
     ClientController.prototype.showMessage = function(msg, style){

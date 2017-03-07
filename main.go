@@ -5,10 +5,6 @@ import (
 	"github.com/herlegs/Undercover/redis"
 )
 
-func init(){
-	redis.Init()
-}
-
 func main(){
 	defer cleanup()
 	server.Start()

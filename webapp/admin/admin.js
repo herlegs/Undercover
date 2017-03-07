@@ -179,8 +179,8 @@
             var roomStatus = roomInfo.RoomStatus;
             vm.UserStatus.RoomStatus = roomStatus;
             vm.GameConfig = roomInfo.GameConfig;
-            vm.Players = roomInfo.Players;
-            vm.Progress = vm.GameConfig.TotalNum == 0 ? 0 : 100 * vm.Players.length / vm.GameConfig.TotalNum;
+            vm.Players = util.sortByField(roomInfo.Players, "IsMinority");
+            vm.calculateProgress();
             if(roomStatus == constant.ROOM_STATUS.Waiting){
                 vm.param.$timeout(vm.waitingForPlayers.bind(vm), vm.WaitingPlayerInterval)
             }
@@ -201,6 +201,10 @@
         }, function fail(response){
             vm.showMessage("You are not authorized to end game")
         });
+    };
+
+    AdminController.prototype.calculateProgress = function(){
+        vm.Progress = vm.GameConfig.TotalNum == 0 ? 0 : 100 * vm.Players.length / vm.GameConfig.TotalNum;
     };
 
     AdminController.prototype.showMessage = function(msg, style){
