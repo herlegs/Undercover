@@ -32,7 +32,10 @@ Recommended:
 5. When player describe his given word, it must be correct and related, eg. when the 2 words are "Conan" and "Holmes" and one player's word is "Holmes", he cannot use "he is handsome" to describe him as it's not so related.
 
 ##Get Started
+start redis server on local at :6379
+
 start the server:
+
 go run main.go
 
 web-based clients:
