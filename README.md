@@ -36,7 +36,16 @@ start the server:
 go run main.go
 
 web-based clients:
+
 localhost:8000/admin to access admin interface: game configuration and control
+
 localhost:8000/player to access player interface: join game
+
+Admin Interface:
+
+
+Player Interface:
+
+
 
 
