@@ -107,7 +107,8 @@
             vm.UserStatus.InRoom = true;
             vm.UserStatus.RoomStatus = data.RoomStatus;
             vm.GameConfig = data.GameConfig;
-            vm.Players = util.sortByField(data.Players, "ID");
+            vm.Players = data.Players;
+            util.sortByField(vm.Players, "ID");
             vm.calculateProgress();
             vm.checkingGameStatus.call(vm)
         }, function fail(response){
